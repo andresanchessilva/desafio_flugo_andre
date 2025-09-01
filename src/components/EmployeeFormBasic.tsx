@@ -5,8 +5,8 @@ import {
   FormControl,
   FormGroup,
   FormControlLabel,
-  Switch,
 } from "@mui/material";
+import { IOSSwitch } from "./IOSSwitch";
 
 interface Props {
   formData: { name: string; email: string; active: boolean };
@@ -43,21 +43,23 @@ export default function EmployeeFormBasic({ formData, onChange }: Props) {
         <FormGroup row>
           <FormControlLabel
             control={
-              <Switch
+              <IOSSwitch
                 checked={formData.active}
                 onChange={onChange}
                 name="active"
-                color="primary"
               />
             }
             label="Ativar ao criar"
             labelPlacement="end"
             slotProps={{
               typography: {
+                marginLeft: 1,
                 color: "text.secondary",
                 fontWeight: 500,
+                variant: "body2",
               },
             }}
+            sx={{ marginLeft: 0, alignItems: "center" }}
           />
         </FormGroup>
       </FormControl>

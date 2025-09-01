@@ -26,7 +26,28 @@ export default function VerticalLinearStepper({
       <Stepper activeStep={safeStep} orientation="vertical" {...rest}>
         {steps.map((step, index) => (
           <Step key={step.label} completed={safeStep > index}>
-            <StepLabel>{step.label}</StepLabel>
+            <StepLabel
+              slotProps={{
+                stepIcon: {
+                  sx: {
+                    "& .MuiStepIcon-text": {
+                      fontWeight: "bold",
+                    },
+
+                    "&:not(.Mui-active):not(.Mui-completed)": {
+                      color: "#DFE3E9",
+
+                      "& .MuiStepIcon-text": {
+                        fill: (theme) => theme.palette.text.secondary,
+                      },
+                    },
+                  },
+                },
+              }}
+            >
+              {step.label}
+            </StepLabel>
+
             <StepContent sx={{ paddingBottom: 4 }}>
               {step.description && <Typography>{step.description}</Typography>}
               {!step.description && <Box sx={{ minHeight: 50 }} />}
