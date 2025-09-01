@@ -69,3 +69,6 @@ npm run dev
 Acesse `http://localhost:5173` no seu navegador.
 
 ---
+
+💾 André Gustavo Sanches Silva  
+📞 (44) 99732-5770 | 💼 [LinkedIn](https://www.linkedin.com/in/andr%C3%A9-gustavo-silva-090986274/) | ✉️ andre.sanchessilva@gmail.com
