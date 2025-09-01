@@ -48,7 +48,17 @@ npm install
   ```bash
   cp .env.example .env
   ```
-- Abra o arquivo `.env` e adicione suas credenciais do Firebase.
+- Abra o arquivo `.env` e adicione suas credenciais do Firebase. É necessário ter uma coleção chamada **employees**, os documentos seguem o seguinte formato:
+```json
+{
+  "name": "string",
+  "email": "string",
+  "department": "string",
+  "status": ["ativo", "inativo"]
+  "createdAt": "timestamp"
+}
+```
+- Observação: imaginando que status poderia incluir outros valores além de “ativo” ou “inativo”, foi usado string em vez de boolean. No entanto, nesta implementação, as chips são renderizadas apenas para os valores “ativo” ou “inativo”.
 
 **4. Rode a aplicação:**
 
