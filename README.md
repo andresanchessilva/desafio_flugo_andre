@@ -32,7 +32,7 @@ Projeto de um formulário multi-step para cadastro de colaboradores com dados pe
 **1. Clone o repositório:**
 
 ```bash
-git clone [https://github.com/andresanchessilva/desafio_flugo_andre.git](https://github.com/andresanchessilva/desafio_flugo_andre.git)
+git clone https://github.com/andresanchessilva/desafio_flugo_andre.git
 cd desafio_flugo_andre
 ```
 
