@@ -4,7 +4,7 @@ Projeto de um formulário multi-step para cadastro de colaboradores com dados pe
 
 ---
 
-### 🚀 **Aplicação Online:** [Acessar o Deploy na Vercel](https://vercel.com/andresanchessilvas-projects/desafio-flugo-andre)
+### 🚀 **Aplicação Online:** [Acessar o Deploy na Vercel](https://desafio-flugo-andre.vercel.app/)
 
 ---
 
