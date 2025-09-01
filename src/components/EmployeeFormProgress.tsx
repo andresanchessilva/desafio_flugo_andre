@@ -1,4 +1,3 @@
-import * as React from "react";
 import LinearProgress, {
   type LinearProgressProps,
 } from "@mui/material/LinearProgress";
