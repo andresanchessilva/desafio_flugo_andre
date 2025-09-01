@@ -117,9 +117,7 @@ export default function MainLayout() {
           display="flex"
           justifyContent="flex-end"
         >
-          <Avatar
-            src={`https://api.dicebear.com/9.x/big-smile/svg?backgroundColor=b6e3f4,c0aede,d1d4f9&seed=flugo`}
-          />
+          <Avatar />
         </Box>
         <Box
           component="main"

@@ -22,9 +22,7 @@ const columns: GridColDef<EmployeeWithId>[] = [
           width: "100%",
         }}
       >
-        <Avatar
-          src={`https://api.dicebear.com/9.x/big-smile/svg?backgroundColor=b6e3f4,c0aede,d1d4f9&seed=${params.row.id}`}
-        />
+        <Avatar src="">{params.row.name.charAt(0)}</Avatar>
         <Typography
           variant="body2"
           noWrap
