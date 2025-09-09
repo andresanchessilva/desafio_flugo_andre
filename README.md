@@ -14,14 +14,19 @@ Projeto de um formulário multi-step para cadastro de colaboradores com dados pe
 - Formulário de cadastro em múltiplos passos.
 - Persistência de dados em tempo real com o Firebase Firestore.
 - Feedback de sucesso/erro com notificações (Snackbar).
-- Edição e exclusão de colaboradores 🔥
+- Edição e exclusão de colaboradores. 🔥
 - Filtros de colaboradores por nome, e-mail e departamento. 🔥
-- Listagem, criação, edição e exclusão de departamentos 🔥
-- Autenticação 🔥
-- Página 404 (Not found) 🔥
-- Proteção de exclusão: 🔥
-  - Um colaborador não pode ser excluído se for gerente de outro colaborador ou de um departamento. 🔥
-  - Um departamento não pode ser excluído se houver colaboradores vinculados a ele. 🔥
+- Listagem, criação, edição e exclusão de departamentos. 🔥
+- Autenticação. 🔥
+- Página 404 (Not found). 🔥
+ 
+⚠️ Observações Importantes:
+
+- Filtros e Ordenação: Os filtros de colaboradores (nome, e-mail e departamento) não devem ser usados em conjunto com a ordenação. Foram criados indexes no Firestore que permitem usar qualquer combinação dos três filtros de forma independente, mas combinar filtros com ordenação não é suportado. O filtro corresponde ao início do texto buscado e é case-sensitive. Mesmo sendo possível contornar isso de outras formas, optou-se por enviar o filtro diretamente para o Firestore em vez de fazer todo o filtro apenas no frontend.
+
+- Restrições de Exclusão: 
+  - Um colaborador não pode ser excluído se ele for gerente de outro colaborador ou de um departamento.
+  - Um departamento não pode ser excluído se possuir colaboradores vinculados a ele.
 
 ---
 
