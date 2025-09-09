@@ -177,6 +177,7 @@ export default function EmployeesPage() {
           onChange={(e) => setEmailFilter(e.target.value)}
         />
         <DepartmentSelect
+          allowNull
           value={departmentFilter}
           onChange={setDepartmentFilter}
         />
