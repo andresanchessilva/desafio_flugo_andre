@@ -1,15 +1,13 @@
 import { useState } from "react";
 import {
   Box,
-  Avatar,
-  Typography,
-  Chip,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography,
 } from "@mui/material";
 import {
   type GridColDef,
@@ -25,20 +23,17 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-import type { EmployeeWithDepartment } from "../services/employeeService";
-import { EMPLOYEE_STATUS, type EmployeeStatusKey } from "../constants/employee";
+import type { DepartmentWithIdAndManager } from "../services/departmentService";
 import { useSnackbar } from "../contexts/useSnackbar";
-import { useDepartments } from "../hooks/useDepartments";
 
-interface EmployeesDataGridProps {
-  rows: EmployeeWithDepartment[];
+interface DepartmentsDataGridProps {
+  rows: DepartmentWithIdAndManager[];
   isLoading: boolean;
   sortModel?: GridSortModel;
   onSortModelChange: (model: GridSortModel) => void;
   onEditRow: (id: GridRowId) => void;
   onDeleteRow: (id: GridRowId) => void;
   onBulkDelete: (ids: string[]) => void;
-
   rowSelectionModel: GridRowSelectionModel;
   onRowSelectionModelChange: (model: GridRowSelectionModel) => void;
 }
@@ -64,13 +59,12 @@ function CustomFooter({
       ) : (
         <span style={{ marginLeft: 16, fontSize: 14, color: "#555" }}></span>
       )}
-
       <GridFooter />
     </GridFooterContainer>
   );
 }
 
-export default function EmployeesDataGrid({
+export default function DepartmentsDataGrid({
   rows,
   isLoading,
   sortModel,
@@ -80,13 +74,12 @@ export default function EmployeesDataGrid({
   onBulkDelete,
   rowSelectionModel,
   onRowSelectionModelChange,
-}: EmployeesDataGridProps) {
+}: DepartmentsDataGridProps) {
   const [openDialog, setOpenDialog] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<
     { type: "single"; id: GridRowId } | { type: "bulk"; ids: string[] } | null
   >(null);
   const { showSnackbar } = useSnackbar();
-  const { departments } = useDepartments();
 
   const handleOpenDeleteSingle = (id: GridRowId) => {
     setDeleteTarget({ type: "single", id });
@@ -103,102 +96,48 @@ export default function EmployeesDataGrid({
     setDeleteTarget(null);
   };
 
-  const handleConfirmDelete = async () => {
-    if (!deleteTarget) return;
-
-    try {
-      if (deleteTarget.type === "single") {
-        const employee = rows.find((e) => e.id === deleteTarget.id);
-        if (!employee) return;
-
-        const managesSomeone = rows.some((e) => e.managerId === employee.id);
-        if (managesSomeone) {
-          showSnackbar(
-            "Não é possível remover um colaborador que é gestor de outro colaborador.",
-            "error"
-          );
-          return;
-        }
-
-        const managesDepartment = departments.some(
-          (d) => d.managerId === employee.id
+  const handleConfirmDelete = () => {
+    if (deleteTarget?.type === "single") {
+      const dept = rows.find((row) => row.id === deleteTarget.id);
+      if (dept && dept.employees!.length > 0) {
+        showSnackbar(
+          "Não é possível excluir um departamento que possui colaboradores.",
+          "error"
         );
-        if (managesDepartment) {
-          showSnackbar(
-            "Não é possível remover um colaborador que é gestor de um departamento.",
-            "error"
-          );
-          return;
-        }
-
-        await onDeleteRow(employee.id);
-        showSnackbar("Colaborador removido com sucesso!", "success");
-      } else if (deleteTarget.type === "bulk") {
-        const invalid = rows.filter(
-          (e) =>
-            deleteTarget.ids.includes(e.id) &&
-            (rows.some((emp) => emp.managerId === e.id) ||
-              departments.some((d) => d.managerId === e.id))
-        );
-
-        if (invalid.length) {
-          showSnackbar(
-            `Não é possível remover os seguintes colaboradores pois são gestores: ${invalid
-              .map((e) => e.name)
-              .join(", ")}`,
-            "error"
-          );
-          return;
-        }
-
-        await onBulkDelete(deleteTarget.ids);
-        showSnackbar("Colaboradores removidos com sucesso!", "success");
+        handleCloseDialog();
+        return;
       }
-    } finally {
-      handleCloseDialog();
+      onDeleteRow(deleteTarget.id);
+    } else if (deleteTarget?.type === "bulk") {
+      const invalidDepts = rows.filter(
+        (row) =>
+          deleteTarget.ids.includes(row.id) && (row.employees?.length ?? 0) > 0
+      );
+
+      if (invalidDepts.length > 0) {
+        showSnackbar(
+          `Os seguintes departamentos não podem ser excluídos pois possuem colaboradores: ${invalidDepts
+            .map((d) => d.name)
+            .join(", ")}`,
+          "error"
+        );
+        handleCloseDialog();
+        return;
+      }
+
+      onBulkDelete(deleteTarget.ids);
     }
+
+    handleCloseDialog();
   };
 
-  const columns: GridColDef<EmployeeWithDepartment>[] = [
+  const columns: GridColDef<DepartmentWithIdAndManager>[] = [
+    { field: "name", headerName: "Nome", flex: 1 },
     {
-      field: "name",
-      headerName: "Nome",
-      flex: 1,
-      renderCell: (params) => (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            height: "100%",
-            gap: 2,
-            width: "100%",
-          }}
-        >
-          <Avatar src="">{params.row.name.charAt(0)}</Avatar>
-          <Typography
-            variant="body2"
-            noWrap
-            sx={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              width: "100%",
-            }}
-          >
-            {params.row.name}
-          </Typography>
-        </Box>
-      ),
-    },
-    {
-      field: "email",
-      headerName: "Email",
-      flex: 1,
-    },
-    {
-      field: "department",
+      field: "manager",
+      headerName: "Gestor",
       sortable: false,
-      headerName: "Departamento",
-      flex: 0.4,
+      flex: 1,
       renderCell: (params) => (
         <Box
           sx={{
@@ -218,52 +157,29 @@ export default function EmployeesDataGrid({
               width: "100%",
             }}
           >
-            {params.row.department?.name}
+            {params.row.manager.name}
           </Typography>
         </Box>
       ),
     },
     {
-      field: "status",
-      headerName: "Status",
-      flex: 0.3,
-      align: "right",
-      headerAlign: "right",
-      renderCell: (params) => {
-        const statusKey = params.value as EmployeeStatusKey;
-        const statusInfo = EMPLOYEE_STATUS[statusKey];
-        if (!statusInfo) return null;
-
-        const colorKey = `${statusInfo.color}Chip` as const;
-        return (
-          <Chip
-            label={statusInfo.label}
-            size="small"
-            sx={{
-              fontWeight: "bold",
-              borderRadius: 1,
-              color: (theme) => theme.palette[colorKey]?.main,
-              backgroundColor: (theme) => theme.palette[colorKey]?.background,
-            }}
-          />
-        );
-      },
+      field: "employees",
+      headerName: "Qtd. Usuários",
+      flex: 1,
+      renderCell: (params) => params.value?.length ?? 0,
     },
     {
       field: "actions",
       type: "actions",
       headerName: "Ações",
-      flex: 0.3,
       width: 100,
       align: "right",
       headerAlign: "right",
-      cellClassName: "actions",
       getActions: ({ id }) => [
         <GridActionsCellItem
           icon={<EditIcon />}
           label="Editar"
           onClick={() => onEditRow(id)}
-          color="inherit"
         />,
         <GridActionsCellItem
           icon={<DeleteIcon />}
@@ -282,6 +198,7 @@ export default function EmployeesDataGrid({
           if (params.field === "__check__" || params.field === "actions") {
             return;
           }
+
           onEditRow(params.id);
         }}
         rows={rows}
@@ -297,11 +214,7 @@ export default function EmployeesDataGrid({
         disableColumnMenu
         disableRowSelectionOnClick
         initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 10,
-            },
-          },
+          pagination: { paginationModel: { pageSize: 10 } },
         }}
         pageSizeOptions={[5, 10, 25]}
         slots={{
@@ -342,34 +255,35 @@ export default function EmployeesDataGrid({
             outline: "none",
           },
           "& .MuiDataGrid-columnHeader:focus, & .MuiDataGrid-columnHeader:focus-within":
-            {
-              outline: "none",
-            },
+            { outline: "none" },
         }}
       />
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Confirmar Exclusão</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {deleteTarget?.type === "single"
-              ? "Tem certeza que deseja excluir este colaborador? Essa ação não pode ser desfeita."
-              : `Tem certeza que deseja excluir ${deleteTarget?.ids.length} colaboradores? Essa ação não pode ser desfeita.`}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="inherit">
-            Cancelar
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleConfirmDelete}
-            color="error"
-            autoFocus
-          >
-            Excluir
-          </Button>
-        </DialogActions>
-      </Dialog>
+
+      {deleteTarget && (
+        <Dialog open={openDialog} onClose={handleCloseDialog}>
+          <DialogTitle>Confirmar Exclusão</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {deleteTarget.type === "single"
+                ? "Deseja excluir este departamento?"
+                : `Deseja excluir ${deleteTarget.ids.length} departamentos?`}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} color="inherit">
+              Cancelar
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleConfirmDelete}
+              color="error"
+              autoFocus
+            >
+              Excluir
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </Box>
   );
 }

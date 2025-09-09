@@ -14,6 +14,14 @@ Projeto de um formulário multi-step para cadastro de colaboradores com dados pe
 - Formulário de cadastro em múltiplos passos.
 - Persistência de dados em tempo real com o Firebase Firestore.
 - Feedback de sucesso/erro com notificações (Snackbar).
+- Edição e exclusão de colaboradores 🔥
+- Filtros de colaboradores por nome, e-mail e departamento. 🔥
+- Listagem, criação, edição e exclusão de departamentos 🔥
+- Autenticação 🔥
+- Página 404 (Not found) 🔥
+- Proteção de exclusão: 🔥
+  - Um colaborador não pode ser excluído se for gerente de outro colaborador ou de um departamento. 🔥
+  - Um departamento não pode ser excluído se houver colaboradores vinculados a ele. 🔥
 
 ---
 
@@ -49,6 +57,7 @@ npm install
   cp .env.example .env
   ```
 - Abra o arquivo `.env` e adicione suas credenciais do Firebase. É necessário ter uma coleção chamada **employees**, os documentos seguem o seguinte formato:
+
 ```json
 {
   "name": "string",
@@ -58,6 +67,7 @@ npm install
   "createdAt": "timestamp"
 }
 ```
+
 - Observação: imaginando que status poderia incluir outros valores além de “ativo” ou “inativo”, foi usado string em vez de boolean. No entanto, nesta implementação, as chips são renderizadas apenas para os valores “ativo” ou “inativo”.
 
 **4. Rode a aplicação:**

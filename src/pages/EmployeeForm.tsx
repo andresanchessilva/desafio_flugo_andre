@@ -7,6 +7,7 @@ import EmployeeFormProfessional from "../components/EmployeeFormProfessional";
 import FormNavigation from "../components/FormNavigation";
 import useEmployeeForm from "../hooks/useEmployeeForm";
 import useFormStepper from "../hooks/useFormStepper";
+import type { Dayjs } from "dayjs";
 
 export default function EmployeesForm() {
   const steps = [
@@ -20,12 +21,20 @@ export default function EmployeesForm() {
     isLoading,
     handleInputChange,
     handleSelectChange,
+    handleChangeDate,
     submitForm,
+    handleDepartmentChange,
+    handleChangeManager,
   } = useEmployeeForm({
     name: "",
     email: "",
     active: true,
-    department: "",
+    departmentId: "",
+    hierarchicalLevel: "",
+    position: "",
+    admissionDate: null as Dayjs | null,
+    baseSalary: "",
+    managerId: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,7 +61,11 @@ export default function EmployeesForm() {
         return (
           <EmployeeFormProfessional
             formData={formData}
-            onChange={handleSelectChange}
+            onChangeManager={handleChangeManager}
+            handleDepartmentChange={handleDepartmentChange}
+            onChangeDate={handleChangeDate}
+            onChangeSelect={handleSelectChange}
+            onChangeText={handleInputChange}
           />
         );
     }
@@ -83,7 +96,7 @@ export default function EmployeesForm() {
           flexDirection="column"
           flexGrow={1}
         >
-          <Box flexGrow={1} minHeight={400}>
+          <Box flexGrow={1} minHeight={550}>
             {renderStepContent()}
           </Box>
 
